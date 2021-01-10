@@ -121,7 +121,7 @@ def update_timer(total_timer, current_time):
 def get_formatted_time(current_time):
     remainder, milliseconds = divmod(current_time, 1000)
     remainder, seconds = divmod(remainder, 60)
-    minutes, hours = divmod(remainder, 60)
+    hours, minutes = divmod(remainder, 60)
     return '{:02d}:{:02d}:{:02d}.{:03d}'.format(hours,
                                                 minutes,
                                                 seconds,
