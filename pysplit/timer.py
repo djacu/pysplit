@@ -1,3 +1,4 @@
+'''Timer is a class that behaves like a stop watch with splits.'''
 
 import time
 
@@ -8,6 +9,14 @@ class Timer:
         self._pause_time = 0
         self._split_list = []
         self._pause = True
+
+    @property
+    def paused(self):
+        return self._pause
+
+    @property
+    def splits(self):
+        return self._split_list
 
     def start_pause(self):
         # if not self._start_time and not self._split_list and self._pause:
@@ -23,22 +32,23 @@ class Timer:
             print('timer paused')
 
     def start(self):
-        if self._pause:
+        if self.paused:
             self.start_pause()
 
     def pause(self):
-        if not self._pause:
+        if not self.paused:
             self.start_pause()
 
     def reset(self):
-        if self._pause:
+        if self.paused:
             self._start_time = 0
             self._pause_time = 0
             self._split_list = []
             self._pause = True
 
     def split(self):
-        self._split_list.append(self.get_formatted())
+        if not self.paused:
+            self._split_list.append(self.get_formatted())
 
     def get(self):
         if self._pause and not self._start_time:
@@ -50,7 +60,8 @@ class Timer:
 
     def get_formatted(self):
         current_time = self.get()
-        remainder, milliseconds = divmod(current_time, 10 ** 9)
+        remainder, nanoseconds = divmod(current_time, 10 ** 9)
+        milliseconds = nanoseconds // 10 ** 6
         remainder, seconds = divmod(remainder, 60)
         hours, minutes = divmod(remainder, 60)
         return '{:02d}:{:02d}:{:02d}.{:03d}'.format(hours,
