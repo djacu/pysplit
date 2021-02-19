@@ -41,31 +41,34 @@ class LabelTitle(tk.Label):
 
 
 class TextEditBox(tk.Frame):
-    def __init__(self, root, root2, *args, **kwargs):
-        super().__init__(root, *args, **kwargs)
+    def __init__(self, top, root, *args, **kwargs):
+        super().__init__(top, *args, **kwargs)
+        self.top = top
         self.root = root
-        self.root2 = root2
         self.make_widgets()
 
     def make_widgets(self):
-        entry = tk.Entry(self.root, width=40)
+        entry = tk.Entry(self.top, width=40)
         entry.grid(row=0, column=0)
         self.entry = entry
 
-        frame = tk.Frame(self.root, width=40)
+        frame = tk.Frame(self.top, width=40)
         frame.grid(row=1, column=0, sticky=tk.NSEW)
-        frame.grid_columnconfigure(0, weight=1)
-        frame.grid_columnconfigure(1, weight=1)
-        frame.grid_rowconfigure(0, weight=1)
+        for col in range(2):
+            frame.grid_columnconfigure(col, weight=1)
+        for row in range(1):
+            frame.grid_rowconfigure(row, weight=1)
 
         button_change = tk.Button(frame, text='Change', command=self.get_text)
         button_change.grid(row=0, column=0, sticky=tk.NSEW)
-        button_exit = tk.Button(frame, text='Exit', command=self.root.destroy)
+        button_exit = tk.Button(frame, text='Exit', command=self.top.destroy)
         button_exit.grid(row=0, column=1, sticky=tk.NSEW)
 
     def get_text(self):
-        self.root2['text'] = self.entry.get()
-        self.root.destroy()
+        entry_text = self.entry.get()
+        if entry_text:
+            self.root['text'] = entry_text
+            self.top.destroy()
 
 
 if __name__ == '__main__':
