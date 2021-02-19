@@ -39,22 +39,6 @@ class LabelTitle(tk.Label):
         box = TextEditBox(top, self)
         box.pack()
 
-        # text_box = tk.Text(top)
-        # text_box.pack(fill='both', expand=True)
-        # text_box.insert(tk.END, 'some text')
-        # button_text_box = tk.Button(top, height=1, width=10, text='Get', command=self.get_text)
-        # button_text_box.pack()
-        # self.text_box = text_box
-
-        # # self['text'] = str(self.root.data)
-
-    # def get_text(self):
-    #     self['text'] = self.text_box.get('1.0', tk.END)
-
-    # def create_window(self, event):
-    #     self.top = tk.Toplevel()
-    #     self.top.title('title')
-
 
 class TextEditBox(tk.Frame):
     def __init__(self, root, root2, *args, **kwargs):
