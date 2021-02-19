@@ -37,7 +37,7 @@ class LabelTitle(tk.Label):
         top = tk.Toplevel(self.root)
         top.wm_title('Edit Title')
         box = TextEditBox(top, self)
-        box.pack()
+        box.grid()
 
 
 class TextEditBox(tk.Frame):
@@ -48,16 +48,24 @@ class TextEditBox(tk.Frame):
         self.make_widgets()
 
     def make_widgets(self):
-        text_box = tk.Entry(self.root)
-        text_box.pack()
+        entry = tk.Entry(self.root, width=40)
+        entry.grid(row=0, column=0)
+        self.entry = entry
 
-        button_text_box = tk.Button(self.root, height=1, width=10,
-                                    text='Change', command=self.get_text)
-        button_text_box.pack()
-        self.text_box = text_box
+        frame = tk.Frame(self.root, width=40)
+        frame.grid(row=1, column=0, sticky=tk.NSEW)
+        frame.grid_columnconfigure(0, weight=1)
+        frame.grid_columnconfigure(1, weight=1)
+        frame.grid_rowconfigure(0, weight=1)
+
+        button_change = tk.Button(frame, text='Change', command=self.get_text)
+        button_change.grid(row=0, column=0, sticky=tk.NSEW)
+        button_exit = tk.Button(frame, text='Exit', command=self.root.destroy)
+        button_exit.grid(row=0, column=1, sticky=tk.NSEW)
 
     def get_text(self):
-        self.root2['text'] = self.text_box.get()
+        self.root2['text'] = self.entry.get()
+        self.root.destroy()
 
 
 if __name__ == '__main__':
