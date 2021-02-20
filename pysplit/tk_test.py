@@ -12,8 +12,25 @@ class Application(tk.Tk):
         self.minsize(width=400, height=600)
         self.widgets = []
 
+        self.make_menu()
         self.make_widgets()
         print(self.widgets)
+
+        self.bind('<Button-3>', self.popup)
+
+    def make_menu(self):
+        menu = tk.Menu(self, tearoff=False)
+        menu.add_command(label='hello', command=self.hello)
+        menu.add_separator()
+        menu.add_command(label='exit', command=self.destroy)
+        self.menu = menu
+
+    def popup(self, event):
+        self.menu.tk_popup(event.x_root, event.y_root)
+
+    def hello(self):
+        print('hello')
+
 
     def make_widgets(self):
         label_title = LabelTitle(self, text='Title')
