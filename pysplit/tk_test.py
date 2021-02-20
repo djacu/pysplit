@@ -5,13 +5,10 @@ from tkinter import ttk
 FONT = 'Helvetica'
 
 
-class Application(tk.Frame):
+class Application(tk.Tk):
     def __init__(self, root, *args, **kwargs):
         super().__init__(root, *args, **kwargs)
-
         self.pack()
-
-        self.data = 42
 
         self.widgets = []
         self.make_widgets()
@@ -20,14 +17,7 @@ class Application(tk.Frame):
     def make_widgets(self):
         label_title = LabelTitle(self, text='Title')
         label_title.pack()
-
-        widget = tk.Button(self, text='Button!', command=self.message)
-        widget.pack(side=tk.LEFT)
-        self.widgets.append(widget)
-
-    def message(self):
-        self.data += 1
-        print(f'Hello frame {self.data}')
+        self.widgets.append(label_title)
 
 
 class LabelTitle(tk.Label):
@@ -40,7 +30,7 @@ class LabelTitle(tk.Label):
         top = tk.Toplevel(self.root)
         top.wm_title('Edit Title')
         box = TextEditBox(top, self)
-        box.pack()
+        box.grid()
 
 
 class TextEditBox(tk.Frame):
@@ -96,7 +86,7 @@ class TextEditBox(tk.Frame):
         self.entry.config(width=width)
 
     def resize_button_text(self, event):
-        width = event.width // 10
+        width = event.width // 8
         height = event.height // 2 // 2
         size = min((width, height))
         self.button_change.config(font=(FONT, size))
