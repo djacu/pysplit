@@ -31,20 +31,29 @@ class Application(tk.Tk):
     def hello(self):
         print('hello')
 
-
     def make_widgets(self):
+        self.make_title()
+        self.make_splitbox()
+        self.make_button()
+        self.config_grid()
+
+    def make_title(self):
         label_title = LabelTitle(self, text='Title')
         label_title.grid(row=0, column=0, sticky=tk.NSEW)
-        self.widgets.append(label_title)
+        self.widgets.append((label_title, 1))
 
+    def make_splitbox(self):
         split_box = SplitBox(self)
         split_box.grid(row=1, column=0, sticky=tk.NSEW)
-        self.widgets.append(split_box)
+        self.widgets.append((split_box, 8))
 
+    def make_button(self):
         button = tk.Button(self, text='button')
         button.grid(row=2, column=0, sticky=tk.NSEW)
+        self.widgets.append((button, 1))
 
-        row_weights = (1, 8, 1)
+    def config_grid(self):
+        row_weights = tuple(zip(*self.widgets))[1]
         for row, weight in zip(range(3), row_weights):
             self.grid_rowconfigure(row, weight=weight)
         for col in range(1):
