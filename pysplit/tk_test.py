@@ -1,24 +1,37 @@
 import tkinter as tk
-from tkinter import ttk
+# from tkinter import font
+# from tkinter import ttk
 
 
 FONT = 'Helvetica'
 
 
 class Application(tk.Tk):
-    def __init__(self, root, *args, **kwargs):
-        super().__init__(root, *args, **kwargs)
-        self.pack()
-
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.minsize(width=400, height=600)
         self.widgets = []
+
         self.make_widgets()
         print(self.widgets)
 
     def make_widgets(self):
         label_title = LabelTitle(self, text='Title')
-        label_title.pack()
+        label_title.grid(row=0, column=0, sticky=tk.NSEW)
         self.widgets.append(label_title)
 
+        split_box = SplitBox(self)
+        split_box.grid(row=1, column=0, sticky=tk.NSEW)
+        self.widgets.append(split_box)
+
+        button = tk.Button(self, text='button')
+        button.grid(row=2, column=0, sticky=tk.NSEW)
+
+        row_weights = (1, 8, 1)
+        for row, weight in zip(range(3), row_weights):
+            self.grid_rowconfigure(row, weight=weight)
+        for col in range(1):
+            self.grid_columnconfigure(col, weight=1)
 
 class LabelTitle(tk.Label):
     def __init__(self, root, *args, **kwargs):
@@ -31,6 +44,31 @@ class LabelTitle(tk.Label):
         top.wm_title('Edit Title')
         box = TextEditBox(top, self)
         box.grid()
+
+
+class SplitBox(tk.Listbox):
+    def __init__(self, root, *args, **kwargs):
+        super().__init__(root, *args, **kwargs)
+        self.root = root
+        self.make_widgets()
+
+    def make_widgets(self):
+        list_icon = tk.Label(self, text='hi')
+        list_icon.grid(row=0, column=0, sticky='new')
+
+        list_name = tk.Label(self, text='hi', anchor='w')
+        list_name.grid(row=0, column=1, sticky='new')
+        list_name.config(width=0)
+
+        list_split = tk.Label(self, text='hi', anchor='e')
+        list_split.grid(row=0, column=2, sticky='new')
+        list_split.config(width=0)
+
+        for row in range(1):
+            self.grid_rowconfigure(row, weight=1)
+        col_weights = [1, 6, 1]
+        for col, weight in zip(range(3), col_weights):
+            self.grid_columnconfigure(col, weight=weight)
 
 
 class TextEditBox(tk.Frame):
@@ -94,7 +132,5 @@ class TextEditBox(tk.Frame):
 
 
 if __name__ == '__main__':
-    root = tk.Tk()
-    root.minsize(width=200, height=400)
-    app = Application(root)
-    root.mainloop()
+    app = Application()
+    app.mainloop()
