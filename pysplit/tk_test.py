@@ -1,6 +1,8 @@
 """Creates a stopwatch split timer for speedruns."""
 import tkinter as tk
 
+import time
+
 
 FONT = 'Helvetica'
 
@@ -121,17 +123,51 @@ class TextEditBox(tk.Frame):
         self.root = root
         self.default = 'Enter a new label.'
 
+        self.x_start = None
+        self.y_start = None
+
         self.top.geometry('400x60')
         self.top.grid_columnconfigure(0, weight=1)
         self.top.grid_rowconfigure(0, weight=1)
         self.top.grid_rowconfigure(1, weight=1)
 
         self.top.bind('<Configure>', self.resize_top)
+        self.top.bind('<B3-Motion>', self.resize)
+        self.top.bind('<ButtonPress-1>', self.move_press)
+        self.top.bind('<ButtonRelease-1>', self.move_release)
+        self.top.bind('<B1-Motion>', self.move)
 
         self.entry = None
         self.button_change = None
         self.button_exit = None
         self.make_widgets()
+
+    def move_press(self, event):
+        self.x_start = event.x
+        self.y_start = event.y
+
+    def move_release(self, event):
+        self.x_start = None
+        self.y_start = None
+
+    def move(self, event):
+        delta_x = event.x - self.x_start
+        delta_y = event.y - self.y_start
+        x_new = self.winfo_x() + delta_x
+        y_new = self.winfo_y() + delta_y
+        # delta_x = self.top.winfo_pointerx() - self.top.winfo_rootx()
+        # delta_y = self.top.winfo_pointery() - self.top.winfo_rooty()
+        self.top.geometry(f'+{delta_x}+{delta_y}')
+
+    def resize(self, event):
+        delta_x = self.top.winfo_pointerx() - self.top.winfo_rootx()
+        delta_y = self.top.winfo_pointery() - self.top.winfo_rooty()
+        if delta_x > 0:
+            new_x = self.top.winfo_rootx()
+            new_y = self.top.winfo_rooty() + delta_y
+            height = self.top.winfo_height() - delta_y
+            if height > 0:
+                self.top.geometry('%dx%d+%d+%d' % (delta_x, height, new_x, new_y))
 
     def make_widgets(self):
         """Makes all the widgets."""
@@ -188,7 +224,7 @@ class TextEditBox(tk.Frame):
     def resize_top(self, event):
         """Resizes all widgets with changing window size."""
         self.resize_entry(event)
-        self.resize_button_text(event)
+        # self.resize_button_text(event)
 
     def resize_entry(self, event):
         """Resizes the entry with changing window size."""
@@ -203,8 +239,8 @@ class TextEditBox(tk.Frame):
         width = event.width // 8
         height = event.height // 2 // 2
         size = min((width, height))
-        self.button_change.config(font=(FONT, size))
-        self.button_exit.config(font=(FONT, size))
+        self.button_change.config(font=(FONT, size), width=event.width // 2)
+        self.button_exit.config(font=(FONT, size), width=event.width // 2)
 
 
 if __name__ == '__main__':
