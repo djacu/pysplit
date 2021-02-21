@@ -5,6 +5,7 @@ import tkinter as tk
 FONT = 'Helvetica'
 
 
+# pylint: disable=too-many-ancestors
 class Application(tk.Tk):
     """Creates the top-level application."""
     def __init__(self, *args, **kwargs):
@@ -14,7 +15,6 @@ class Application(tk.Tk):
 
         self.make_menu()
         self.make_widgets()
-        print(self.widgets)
 
         self.bind('<Button-3>', self.popup)
 
@@ -66,24 +66,6 @@ class Application(tk.Tk):
         for col in range(1):
             self.grid_columnconfigure(col, weight=1)
 
-class LabelClick(tk.Label):
-    """Creates a label that can be changed by double-clicking."""
-    def __init__(self, root, *args, **kwargs):
-        super().__init__(root, *args, **kwargs)
-        self.root = root
-        self.bind('<Double-Button-1>', self.update_label)
-
-    def update_label(self, event):
-        """Allows the text to be changed by double-clicking."""
-        top = tk.Toplevel(self.root)
-        top.overrideredirect(True)
-        top.attributes('-topmost', 1)
-        x_position = self.root.winfo_rootx() + 20
-        y_position = self.root.winfo_rooty() + 20
-        top.geometry(f'+{x_position}+{y_position}')
-        box = TextEditBox(top, self)
-        box.grid()
-
 
 class SplitBox(tk.Listbox):
     """Creates a single split row."""
@@ -112,6 +94,25 @@ class SplitBox(tk.Listbox):
             self.grid_columnconfigure(col, weight=weight)
 
 
+class LabelClick(tk.Label):
+    """Creates a label that can be changed by double-clicking."""
+    def __init__(self, root, *args, **kwargs):
+        super().__init__(root, *args, **kwargs)
+        self.root = root
+        self.bind('<Double-Button-1>', self.update_label)
+
+    def update_label(self, event):
+        """Allows the text to be changed by double-clicking."""
+        top = tk.Toplevel(self.root)
+        top.overrideredirect(True)
+        top.attributes('-topmost', 1)
+        x_position = self.root.winfo_rootx() + 20
+        y_position = self.root.winfo_rooty() + 20
+        top.geometry(f'+{x_position}+{y_position}')
+        box = TextEditBox(top, self)
+        box.grid()
+
+
 class TextEditBox(tk.Frame):
     """Makes a popup window for editing text."""
     def __init__(self, top, root, *args, **kwargs):
@@ -127,6 +128,9 @@ class TextEditBox(tk.Frame):
 
         self.top.bind('<Configure>', self.resize_top)
 
+        self.entry = None
+        self.button_change = None
+        self.button_exit = None
         self.make_widgets()
 
     def make_widgets(self):
