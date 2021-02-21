@@ -118,6 +118,7 @@ class TextEditBox(tk.Frame):
         super().__init__(top, *args, **kwargs)
         self.top = top
         self.root = root
+        self.default = 'Enter a new label.'
 
         self.top.geometry('400x60')
         self.top.grid_columnconfigure(0, weight=1)
@@ -134,11 +135,30 @@ class TextEditBox(tk.Frame):
         self.make_buttons()
 
     def make_entry(self):
+        """Makes the entry widget."""
         entry = tk.Entry(self.top)
         entry.grid(row=0, column=0)
+        entry.insert(0, self.default)
+        entry.config(fg='grey')
+        entry.bind('<FocusIn>', self.focus_in)
+        entry.bind('<FocusOut>', self.focus_out)
         self.entry = entry
 
+    def focus_in(self, event):
+        """Empties the entry if no user input."""
+        if self.entry.get() == self.default:
+            self.entry.delete(0, tk.END)
+            self.entry.insert(0, '')
+            self.entry.config(fg='black')
+
+    def focus_out(self, event):
+        """Inserts an edit message if no user input."""
+        if self.entry.get() == '':
+            self.entry.insert(0, self.default)
+            self.entry.config(fg='grey')
+
     def make_buttons(self):
+        """Makes the button widgets."""
         frame = tk.Frame(self.top)
         frame.grid(row=1, column=0, sticky=tk.NSEW)
         for col in range(2):
@@ -157,7 +177,7 @@ class TextEditBox(tk.Frame):
     def get_text(self):
         """Gets the text from the entry box and modifies the parent text."""
         entry_text = self.entry.get()
-        if entry_text:
+        if entry_text and not entry_text == self.default:
             self.root['text'] = entry_text
             self.top.destroy()
 
