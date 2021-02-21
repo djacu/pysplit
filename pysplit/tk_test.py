@@ -1,12 +1,12 @@
+"""Creates a stopwatch split timer for speedruns."""
 import tkinter as tk
-# from tkinter import font
-# from tkinter import ttk
 
 
 FONT = 'Helvetica'
 
 
 class Application(tk.Tk):
+    """Creates the top-level application."""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.minsize(width=400, height=600)
@@ -19,6 +19,7 @@ class Application(tk.Tk):
         self.bind('<Button-3>', self.popup)
 
     def make_menu(self):
+        """Construct the top-levle right-click context menu."""
         menu = tk.Menu(self, tearoff=False)
         menu.add_command(label='hello', command=self.hello)
         menu.add_separator()
@@ -26,33 +27,39 @@ class Application(tk.Tk):
         self.menu = menu
 
     def popup(self, event):
+        """Binding for the top-level right-click context menu."""
         self.menu.tk_popup(event.x_root, event.y_root)
 
     def hello(self):
         print('hello')
 
     def make_widgets(self):
+        """Makes all the widgets."""
         self.make_title()
         self.make_splitbox()
         self.make_button()
         self.config_grid()
 
     def make_title(self):
+        """Makes the title."""
         label_title = LabelTitle(self, text='Title')
         label_title.grid(row=0, column=0, sticky=tk.NSEW)
         self.widgets.append((label_title, 1))
 
     def make_splitbox(self):
+        """Makes the main splits area."""
         split_box = SplitBox(self)
         split_box.grid(row=1, column=0, sticky=tk.NSEW)
         self.widgets.append((split_box, 8))
 
     def make_button(self):
+        """Dummy button for now."""
         button = tk.Button(self, text='button')
         button.grid(row=2, column=0, sticky=tk.NSEW)
         self.widgets.append((button, 1))
 
     def config_grid(self):
+        """Configures the top-level widgets grid."""
         row_weights = tuple(zip(*self.widgets))[1]
         for row, weight in zip(range(3), row_weights):
             self.grid_rowconfigure(row, weight=weight)
@@ -60,12 +67,14 @@ class Application(tk.Tk):
             self.grid_columnconfigure(col, weight=1)
 
 class LabelTitle(tk.Label):
+    """Creates a label that can be changed by double-clicking."""
     def __init__(self, root, *args, **kwargs):
         super().__init__(root, *args, **kwargs)
         self.root = root
         self.bind('<Double-Button-1>', self.update_label)
 
     def update_label(self, event):
+        """Allows the text to be changed by double-clicking."""
         top = tk.Toplevel(self.root)
         top.wm_title('Edit Title')
         box = TextEditBox(top, self)
@@ -73,12 +82,14 @@ class LabelTitle(tk.Label):
 
 
 class SplitBox(tk.Listbox):
+    """Creates a single split row."""
     def __init__(self, root, *args, **kwargs):
         super().__init__(root, *args, **kwargs)
         self.root = root
         self.make_widgets()
 
     def make_widgets(self):
+        """Makes all the widgets."""
         list_icon = tk.Label(self, text='hi')
         list_icon.grid(row=0, column=0, sticky='new')
 
@@ -98,6 +109,7 @@ class SplitBox(tk.Listbox):
 
 
 class TextEditBox(tk.Frame):
+    """Makes a popup window for editing text."""
     def __init__(self, top, root, *args, **kwargs):
         super().__init__(top, *args, **kwargs)
         self.top = top
@@ -113,6 +125,7 @@ class TextEditBox(tk.Frame):
         self.make_widgets()
 
     def make_widgets(self):
+        """Makes all the widgets."""
         entry = tk.Entry(self.top)
         entry.grid(row=0, column=0)
         self.entry = entry
@@ -133,23 +146,27 @@ class TextEditBox(tk.Frame):
         self.button_exit = button_exit
 
     def get_text(self):
+        """Gets the text from the entry box and modifies the parent text."""
         entry_text = self.entry.get()
         if entry_text:
             self.root['text'] = entry_text
             self.top.destroy()
 
     def resize_top(self, event):
+        """Resizes all widgets with changing window size."""
         self.resize_entry(event)
         self.resize_button_text(event)
 
     def resize_entry(self, event):
-        height = int((event.height // 2) / 4) * 4
+        """Resizes the entry with changing window size."""
         width = event.width
-        # this causes the entry box to flicker sometimes when resizing
-        # self.entry.config(font=(FONT, height))
         self.entry.config(width=width)
+        # this causes the entry box to flicker sometimes when resizing
+        # height = int((event.height // 2) / 4) * 4
+        # self.entry.config(font=(FONT, height))
 
     def resize_button_text(self, event):
+        """Resizes the button font size with changing window size."""
         width = event.width // 8
         height = event.height // 2 // 2
         size = min((width, height))
@@ -158,5 +175,5 @@ class TextEditBox(tk.Frame):
 
 
 if __name__ == '__main__':
-    app = Application()
-    app.mainloop()
+    APP = Application()
+    APP.mainloop()
