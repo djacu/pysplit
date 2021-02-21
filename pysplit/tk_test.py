@@ -42,7 +42,7 @@ class Application(tk.Tk):
 
     def make_title(self):
         """Makes the title."""
-        label_title = LabelTitle(self, text='Title')
+        label_title = LabelClick(self, text='Title')
         label_title.grid(row=0, column=0, sticky=tk.NSEW)
         self.widgets.append((label_title, 1))
 
@@ -66,7 +66,7 @@ class Application(tk.Tk):
         for col in range(1):
             self.grid_columnconfigure(col, weight=1)
 
-class LabelTitle(tk.Label):
+class LabelClick(tk.Label):
     """Creates a label that can be changed by double-clicking."""
     def __init__(self, root, *args, **kwargs):
         super().__init__(root, *args, **kwargs)
@@ -76,7 +76,11 @@ class LabelTitle(tk.Label):
     def update_label(self, event):
         """Allows the text to be changed by double-clicking."""
         top = tk.Toplevel(self.root)
-        top.wm_title('Edit Title')
+        top.overrideredirect(True)
+        top.attributes('-topmost', 1)
+        x_position = self.root.winfo_rootx() + 20
+        y_position = self.root.winfo_rooty() + 20
+        top.geometry(f'+{x_position}+{y_position}')
         box = TextEditBox(top, self)
         box.grid()
 
@@ -126,10 +130,15 @@ class TextEditBox(tk.Frame):
 
     def make_widgets(self):
         """Makes all the widgets."""
+        self.make_entry()
+        self.make_buttons()
+
+    def make_entry(self):
         entry = tk.Entry(self.top)
         entry.grid(row=0, column=0)
         self.entry = entry
 
+    def make_buttons(self):
         frame = tk.Frame(self.top)
         frame.grid(row=1, column=0, sticky=tk.NSEW)
         for col in range(2):
