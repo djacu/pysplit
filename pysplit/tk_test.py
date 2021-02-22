@@ -1,8 +1,6 @@
 """Creates a stopwatch split timer for speedruns."""
 import tkinter as tk
 
-import time
-
 
 FONT = 'Helvetica'
 
@@ -105,17 +103,131 @@ class LabelClick(tk.Label):
 
     def update_label(self, event):
         """Allows the text to be changed by double-clicking."""
-        top = tk.Toplevel(self.root)
-        top.overrideredirect(True)
-        top.attributes('-topmost', 1)
+        TextEditBox(self)
+        # top = tk.Toplevel(self.root)
+        # top.overrideredirect(True)
+        # top.attributes('-topmost', 1)
+        # x_position = self.root.winfo_rootx() + 20
+        # y_position = self.root.winfo_rooty() + 20
+        # top.geometry(f'+{x_position}+{y_position}')
+        # box = TextEditBox(top, self)
+        # box.grid()
+
+
+class TopLevelBase(tk.Toplevel):
+    def __init__(self, root, *args, **kwargs):
+        super().__init__(root, *args, **kwargs)
+
+        self.root = root
+        self.attributes('-type', 'dock')
+        self.x_start = None
+        self.y_start = None
+
+        self.min_geometry = (80, 40)
+
         x_position = self.root.winfo_rootx() + 20
         y_position = self.root.winfo_rooty() + 20
-        top.geometry(f'+{x_position}+{y_position}')
-        box = TextEditBox(top, self)
-        box.grid()
+        self.geometry(f'+{x_position}+{y_position}')
+
+        self.bind('<ButtonPress-1>', self.move_press)
+        self.bind('<ButtonRelease-1>', self.move_release)
+        self.bind('<B1-Motion>', self.move)
+        self.bind('<B3-Motion>', self.resize)
+
+    def move_press(self, event):
+        """Stores the original position for movement."""
+        self.x_start = event.x
+        self.y_start = event.y
+
+    def move_release(self, event):
+        """Destroys the original position for movement."""
+        self.x_start = None
+        self.y_start = None
+
+    def move(self, event):
+        """Moves the window."""
+        delta_x = self.winfo_pointerx() - self.x_start
+        delta_y = self.winfo_pointery() - self.y_start
+        self.geometry(f'+{delta_x}+{delta_y}')
+
+    def resize(self, event):
+        """Resizes the window."""
+        width = self.winfo_pointerx() - self.winfo_rootx()
+        height = self.winfo_pointery() - self.winfo_rooty()
+        width = max(self.min_geometry[0], width)
+        height = max(self.min_geometry[1], height)
+        self.geometry(f'{width}x{height}')
 
 
-class TextEditBox(tk.Frame):
+class TextEditBox(TopLevelBase):
+    def __init__(self, root, *args, **kwargs):
+        super().__init__(root, *args, **kwargs)
+
+        self.root = root
+        self.default = 'Enter a new label.'
+
+        self.geometry('400x60')
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
+
+        self.make_widgets()
+
+    def make_widgets(self):
+        """Makes all the widgets."""
+        self.make_entry()
+        self.make_buttons()
+
+    def make_entry(self):
+        """Makes the entry widget."""
+        entry = tk.Entry(self)
+        entry.grid(row=0, column=0)
+        entry.config(width=self.winfo_reqwidth())
+        entry.insert(0, self.default)
+        entry.config(fg='grey')
+        entry.bind('<FocusIn>', self.focus_in)
+        entry.bind('<FocusOut>', self.focus_out)
+        self.entry = entry
+
+    def focus_in(self, event):
+        """Empties the entry if no user input."""
+        if self.entry.get() == self.default:
+            self.entry.delete(0, tk.END)
+            self.entry.insert(0, '')
+            self.entry.config(fg='black')
+
+    def focus_out(self, event):
+        """Inserts an edit message if no user input."""
+        if self.entry.get() == '':
+            self.entry.insert(0, self.default)
+            self.entry.config(fg='grey')
+
+    def make_buttons(self):
+        """Makes the button widgets."""
+        frame = tk.Frame(self)
+        frame.grid(row=1, column=0, sticky=tk.NSEW)
+        for col in range(2):
+            frame.grid_columnconfigure(col, weight=1)
+        for row in range(1):
+            frame.grid_rowconfigure(row, weight=1)
+
+        button_change = tk.Button(frame, text='Change', command=self.get_text)
+        button_change.grid(row=0, column=0, sticky=tk.NSEW)
+        self.button_change = button_change
+
+        button_exit = tk.Button(frame, text='Exit', command=self.destroy)
+        button_exit.grid(row=0, column=1, sticky=tk.NSEW)
+        self.button_exit = button_exit
+
+    def get_text(self):
+        """Gets the text from the entry box and modifies the parent text."""
+        entry_text = self.entry.get()
+        if entry_text and not entry_text == self.default:
+            self.root['text'] = entry_text
+            self.destroy()
+
+
+class TextEditBox2(tk.Frame):
     """Makes a popup window for editing text."""
     def __init__(self, top, root, *args, **kwargs):
         super().__init__(top, *args, **kwargs)
@@ -158,6 +270,7 @@ class TextEditBox(tk.Frame):
         # delta_x = self.top.winfo_pointerx() - self.top.winfo_rootx()
         # delta_y = self.top.winfo_pointery() - self.top.winfo_rooty()
         self.top.geometry(f'+{delta_x}+{delta_y}')
+        self.update_idletasks()
 
     def resize(self, event):
         delta_x = self.top.winfo_pointerx() - self.top.winfo_rootx()
