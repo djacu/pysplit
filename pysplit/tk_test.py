@@ -30,7 +30,9 @@ class Application(tk.Tk):
         """Binding for the top-level right-click context menu."""
         self.menu.tk_popup(event.x_root, event.y_root)
 
-    def hello(self):
+    @staticmethod
+    def hello():
+        """Prints 'hello'."""
         print('hello')
 
     def make_widgets(self):
@@ -103,10 +105,12 @@ class LabelClick(tk.Label):
 
     def update_label(self, event):
         """Allows the text to be changed by double-clicking."""
+        # pylint: disable=unused-argument
         TextEditBox(self)
 
 
 class TopLevelBase(tk.Toplevel):
+    """Creates a floating dock window."""
     def __init__(self, root, *args, **kwargs):
         super().__init__(root, *args, **kwargs)
 
@@ -133,17 +137,20 @@ class TopLevelBase(tk.Toplevel):
 
     def move_release(self, event):
         """Destroys the original position for movement."""
+        # pylint: disable=unused-argument
         self.x_start = None
         self.y_start = None
 
     def move(self, event):
         """Moves the window."""
+        # pylint: disable=unused-argument
         delta_x = self.winfo_pointerx() - self.x_start
         delta_y = self.winfo_pointery() - self.y_start
         self.geometry(f'+{delta_x}+{delta_y}')
 
     def resize(self, event):
         """Resizes the window."""
+        # pylint: disable=unused-argument
         width = self.winfo_pointerx() - self.winfo_rootx()
         height = self.winfo_pointery() - self.winfo_rooty()
         width = max(self.min_geometry[0], width)
@@ -152,11 +159,16 @@ class TopLevelBase(tk.Toplevel):
 
 
 class TextEditBox(TopLevelBase):
+    """Creates a window to edit text from root."""
     def __init__(self, root, *args, **kwargs):
         super().__init__(root, *args, **kwargs)
 
         self.root = root
         self.default = 'Enter a new label.'
+
+        self.entry = None
+        self.button_change = None
+        self.button_exit = None
 
         self.geometry('400x60')
         self.grid_columnconfigure(0, weight=1)
@@ -183,6 +195,7 @@ class TextEditBox(TopLevelBase):
 
     def focus_in(self, event):
         """Empties the entry if no user input."""
+        # pylint: disable=unused-argument
         if self.entry.get() == self.default:
             self.entry.delete(0, tk.END)
             self.entry.insert(0, '')
@@ -190,6 +203,7 @@ class TextEditBox(TopLevelBase):
 
     def focus_out(self, event):
         """Inserts an edit message if no user input."""
+        # pylint: disable=unused-argument
         if self.entry.get() == '':
             self.entry.insert(0, self.default)
             self.entry.config(fg='grey')
