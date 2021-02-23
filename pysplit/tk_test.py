@@ -139,8 +139,8 @@ class TopLevelBase(tk.Toplevel):
 
     def move_press(self, event):
         """Stores the original position for movement."""
-        self.x_start = event.x
-        self.y_start = event.y
+        self.x_start = self.winfo_pointerx() - self.winfo_rootx()
+        self.y_start = self.winfo_pointery() - self.winfo_rooty()
 
     def move_release(self, event):
         """Destroys the original position for movement."""
