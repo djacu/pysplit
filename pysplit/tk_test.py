@@ -1,5 +1,7 @@
 """Creates a stopwatch split timer for speedruns."""
 import tkinter as tk
+import tkinter.ttk as ttk
+from PIL import Image, ImageTk
 
 
 FONT = 'Helvetica'
@@ -22,6 +24,7 @@ class Application(tk.Tk):
         """Construct the top-levle right-click context menu."""
         menu = tk.Menu(self, tearoff=False)
         menu.add_command(label='hello', command=self.hello)
+        menu.add_command(label='editor', command=self.editor)
         menu.add_separator()
         menu.add_command(label='exit', command=self.destroy)
         self.menu = menu
@@ -29,6 +32,10 @@ class Application(tk.Tk):
     def popup(self, event):
         """Binding for the top-level right-click context menu."""
         self.menu.tk_popup(event.x_root, event.y_root)
+
+    def editor(self):
+        """Opens the editor."""
+        Editor(self)
 
     @staticmethod
     def hello():
@@ -156,6 +163,159 @@ class TopLevelBase(tk.Toplevel):
         width = max(self.min_geometry[0], width)
         height = max(self.min_geometry[1], height)
         self.geometry(f'{width}x{height}')
+
+
+class Editor(TopLevelBase):
+    """Creates an editor window for settings."""
+    def __init__(self, root, *args, **kwargs):
+        super().__init__(root, *args, **kwargs)
+
+        self.root = root
+
+        self.label_pad = 16
+
+        self.make_top_frame()
+        self.make_widgets()
+
+    def make_top_frame(self):
+        """Splits the top-level into left and right columns."""
+        self.grid_columnconfigure(1, weight=1)
+        for row in range(1):
+            self.grid_rowconfigure(row, weight=1)
+
+    def make_widgets(self):
+        """Makes all the widgets."""
+        self.make_left()
+        self.make_right()
+
+    def make_left(self):
+        """Makes the left widgets."""
+        frame = tk.Frame(self)
+        frame.grid(row=0, column=0, sticky=tk.NSEW)
+
+        # image_icon = Image.open('./images/berry.png')
+        # image_icon = image_icon.resize((160, 160), Image.NEAREST)
+        # icon = ImageTk.PhotoImage(image_icon)
+        # label_icon = tk.Label(frame, image=icon)
+        # label_icon.image = icon
+
+        icon = tk.PhotoImage(file='./images/berry.png')
+        icon = icon.zoom(10)
+        label_icon = tk.Label(frame, image=icon)
+        label_icon.image = icon
+
+        button_insert_above = tk.Button(frame, text='Insert Above',
+                                        command=self.destroy)
+        button_insert_below = tk.Button(frame, text='Insert Below',
+                                        command=self.destroy)
+        button_remove = tk.Button(frame, text='Remove',
+                                  command=self.destroy)
+        button_move_up = tk.Button(frame, text='Move Up',
+                                   command=self.destroy)
+        button_move_down = tk.Button(frame, text='Move Down',
+                                     command=self.destroy)
+
+        widget_list = [label_icon, button_insert_above, button_insert_below,
+                       button_remove, button_move_up, button_move_down]
+        frame.grid_columnconfigure(0, weight=1)
+        for row, widget in enumerate(widget_list):
+            widget.grid(row=row, column=0, sticky=tk.NSEW)
+            # frame.grid_rowconfigure(row, weight=1)
+
+    def make_right(self):
+        """Makes the right widgets."""
+        right_frame = tk.Frame(self)
+        right_frame.grid(row=0, column=1, sticky=tk.NSEW)
+
+        widget_name = self.make_name(right_frame)
+        widget_category = self.make_category(right_frame)
+        widget_time = self.make_time(right_frame)
+        widget_attempts = self.make_attempts(right_frame)
+        widget_tree = self.make_tree(right_frame)
+
+        widget_list = [widget_name, widget_category, widget_time,
+                       widget_attempts, widget_tree]
+        right_frame.grid_columnconfigure(0, weight=1)
+        for row, widget in enumerate(widget_list):
+            widget.grid(row=row, column=0, sticky=tk.NSEW)
+            # right_frame.grid_rowconfigure(row, weight=1)
+
+    def make_name(self, root):
+        frame_name = tk.Frame(root)
+        text = 'Game Name:'.ljust(self.label_pad)
+        label_name = tk.Label(frame_name, text=text)
+        label_name.pack(side=tk.LEFT)
+
+        name_list = ['Super Mario World', 'Super Mario Brothers', 'Zelda']
+        name_list = self.resize_options(name_list)
+        name_var = tk.StringVar(self)
+        name_var.set(name_list[0])
+
+        option_name = tk.OptionMenu(frame_name, name_var, *name_list)
+        option_name.pack(side=tk.RIGHT, expand=True, fill=tk.X)
+        return frame_name
+
+    def make_category(self, root):
+        frame_category = tk.Frame(root)
+        text = 'Category:'.ljust(self.label_pad)
+        label_category = tk.Label(frame_category, text=text)
+        label_category.pack(side=tk.LEFT)
+
+        category_list = ['Any%', '100%', 'Low%', 'Glitchless']
+        category_list = self.resize_options(category_list)
+        category_var = tk.StringVar(self)
+        category_var.set(category_list[0])
+
+        option_category = tk.OptionMenu(frame_category, category_var,
+                                        *category_list)
+        option_category.pack(side=tk.RIGHT, expand=True, fill=tk.X)
+        return frame_category
+
+    @staticmethod
+    def resize_options(option):
+        max_str = max(len(elem) for elem in option)
+        return [elem.center(max_str) for elem in option]
+
+    def make_time(self, root):
+        frame_time = tk.Frame(root)
+        text = 'Start time at:'.ljust(self.label_pad)
+        label_time = tk.Label(frame_time, text=text)
+        label_time.pack(side=tk.LEFT)
+
+        entry_time = tk.Entry(frame_time)
+        entry_time.insert(tk.END, '0.00')
+        entry_time.pack(side=tk.RIGHT, expand=True, fill=tk.X)
+        return frame_time
+
+    def make_attempts(self, root):
+        frame_attempts = tk.Frame(root)
+        text = 'Attempts:'.ljust(self.label_pad)
+        label_attempts = tk.Label(frame_attempts, text=text)
+        label_attempts.pack(side=tk.LEFT)
+
+        entry_attempts = tk.Entry(frame_attempts)
+        entry_attempts.insert(tk.END, '1')
+        entry_attempts.pack(side=tk.RIGHT, expand=True, fill=tk.X)
+        return frame_attempts
+
+    def make_tree(self, root):
+        columns = ('Icon', 'Segment Name', 'Split Time',
+                   'Segment Time', 'Best Segment')
+        widths = (64, 320, 128, 128, 128)
+        anchors = (tk.CENTER, tk.W, tk.E, tk.E, tk.E)
+
+        tree = ttk.Treeview(root, columns=columns, height=10)
+        tree.column('#0', width=0, minwidth=0)
+        params = (columns, widths, anchors)
+        for idx, (column, width, anchor) in enumerate(zip(*params), 1):
+            tree.heading(f'#{idx}', text=column, anchor=anchor)
+            tree.column(column, width=width, anchor=anchor)
+
+        for _ in range(3):
+            tree.insert(parent='', index=tk.END,
+                        values=('icon', 'Frickin Boo',
+                                '10:59:59', '10:59:59', '10:59:59'))
+        return tree
 
 
 class TextEditBox(TopLevelBase):
