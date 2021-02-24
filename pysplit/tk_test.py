@@ -1,9 +1,8 @@
 """Creates a stopwatch split timer for speedruns."""
 import tkinter as tk
 import tkinter.ttk as ttk
-from ttkwidgets.autocomplete import AutocompleteCombobox
-from ttkthemes import ThemedStyle
-from PIL import Image, ImageTk
+from ttkwidgets.autocomplete import AutocompleteCombobox  # pylint: disable=import-error
+from ttkthemes import ThemedStyle  # pylint: disable=import-error
 
 
 FONT = 'Helvetica'
@@ -141,6 +140,7 @@ class TopLevelBase(tk.Toplevel):
 
     def move_press(self, event):
         """Stores the original position for movement."""
+        # pylint: disable=unused-argument
         self.x_start = self.winfo_pointerx() - self.winfo_rootx()
         self.y_start = self.winfo_pointery() - self.winfo_rooty()
 
@@ -195,27 +195,21 @@ class Editor(TopLevelBase):
         frame = ttk.Frame(self)
         frame.grid(row=0, column=0, sticky=tk.NSEW)
 
-        # image_icon = Image.open('./images/berry.png')
-        # image_icon = image_icon.resize((160, 160), Image.NEAREST)
-        # icon = ImageTk.PhotoImage(image_icon)
-        # label_icon = tk.Label(frame, image=icon)
-        # label_icon.image = icon
-
         icon = tk.PhotoImage(file='./images/berry.png')
         icon = icon.zoom(10)
         label_icon = ttk.Label(frame, image=icon)
         label_icon.image = icon
 
         button_insert_above = ttk.Button(frame, text='Insert Above',
-                                        command=self.destroy)
+                                         command=self.destroy)
         button_insert_below = ttk.Button(frame, text='Insert Below',
-                                        command=self.destroy)
+                                         command=self.destroy)
         button_remove = ttk.Button(frame, text='Remove',
-                                  command=self.destroy)
-        button_move_up = ttk.Button(frame, text='Move Up',
                                    command=self.destroy)
+        button_move_up = ttk.Button(frame, text='Move Up',
+                                    command=self.destroy)
         button_move_down = ttk.Button(frame, text='Move Down',
-                                     command=self.destroy)
+                                      command=self.destroy)
 
         widget_list = [label_icon, button_insert_above, button_insert_below,
                        button_remove, button_move_up, button_move_down]
@@ -243,6 +237,7 @@ class Editor(TopLevelBase):
             # right_frame.grid_rowconfigure(row, weight=1)
 
     def make_name(self, root):
+        """Makes the game name widget."""
         frame_name = ttk.Frame(root)
         text = 'Game Name:'.ljust(self.label_pad)
         label_name = ttk.Label(frame_name, text=text)
@@ -255,6 +250,7 @@ class Editor(TopLevelBase):
         return frame_name
 
     def make_category(self, root):
+        """Makes the speedrun category widget."""
         frame_category = ttk.Frame(root)
         text = 'Category:'.ljust(self.label_pad)
         label_category = ttk.Label(frame_category, text=text)
@@ -267,6 +263,7 @@ class Editor(TopLevelBase):
         return frame_category
 
     def make_time(self, root):
+        """Makes the start time widget."""
         frame_time = ttk.Frame(root)
         text = 'Start time at:'.ljust(self.label_pad)
         label_time = ttk.Label(frame_time, text=text)
@@ -278,6 +275,7 @@ class Editor(TopLevelBase):
         return frame_time
 
     def make_attempts(self, root):
+        """Makes the attempts widget."""
         frame_attempts = ttk.Frame(root)
         text = 'Attempts:'.ljust(self.label_pad)
         label_attempts = ttk.Label(frame_attempts, text=text)
@@ -289,22 +287,24 @@ class Editor(TopLevelBase):
         return frame_attempts
 
     def make_tree(self, root):
+        """Makes the segments listing widget."""
         columns = ('Icon', 'Segment Name', 'Split Time',
                    'Segment Time', 'Best Segment')
         widths = (64, 320, 128, 128, 128)
         anchors = (tk.CENTER, tk.W, tk.E, tk.E, tk.E)
 
         tree = ttk.Treeview(root, columns=columns, height=10)
+        # gets rid of the annoying phantom first column
         tree.column('#0', width=0, minwidth=0)
         params = (columns, widths, anchors)
         for idx, (column, width, anchor) in enumerate(zip(*params), 1):
             tree.heading(f'#{idx}', text=column, anchor=anchor)
             tree.column(column, width=width, anchor=anchor)
 
-        for _ in range(3):
+        for idx in range(3):
             tree.insert(parent='', index=tk.END,
-                        values=('icon', 'Frickin Boo',
-                                '10:59:59', '10:59:59', '10:59:59'))
+                        values=('icon', f'Frickin Boo {idx}',
+                                *((f'10:59:{idx}',) * 3)))
         return tree
 
 
@@ -386,5 +386,5 @@ class TextEditBox(TopLevelBase):
 if __name__ == '__main__':
     APP = Application()
     STYLE = ThemedStyle(APP)
-    STYLE.set_theme('black')
+    STYLE.set_theme('equilux')
     APP.mainloop()
