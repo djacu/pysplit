@@ -211,11 +211,13 @@ class Editor(TopLevelBase):
                                     command=self.move_up)
         button_move_down = ttk.Button(frame, text='Move Down',
                                       command=self.move_down)
+        button_exit = ttk.Button(frame, text='Exit', command=self.destroy)
 
         widget_list_names = ['icon', 'insert_above', 'insert_below',
-                             'remove', 'move_up', 'move_down']
+                             'remove', 'move_up', 'move_down', 'exit']
         widget_list = [label_icon, button_insert_above, button_insert_below,
-                       button_remove, button_move_up, button_move_down]
+                       button_remove, button_move_up, button_move_down,
+                       button_exit]
         frame.grid_columnconfigure(0, weight=1)
         for row, widget in enumerate(widget_list):
             widget.grid(row=row, column=0, sticky=tk.NSEW)
@@ -224,10 +226,18 @@ class Editor(TopLevelBase):
         self.widgets.update([*zip(widget_list_names, widget_list)])
 
     def insert_above(self):
-        pass
+        tree = self.widgets['segments']
+        leaves = tree.selection()
+        if leaves:
+            leaf = leaves[0]
+            InsertSegment(self, tree=tree, leaf=leaf, below=False)
 
     def insert_below(self):
-        pass
+        tree = self.widgets['segments']
+        leaves = tree.selection()
+        if leaves:
+            leaf = leaves[0]
+            InsertSegment(self, tree=tree, leaf=leaf, below=True)
 
     def remove(self):
         tree = self.widgets['segments']
@@ -341,6 +351,77 @@ class Editor(TopLevelBase):
                         values=('icon', f'Frickin Boo {idx}',
                                 *((f'10:59:{idx}',) * 3)))
         return tree
+
+
+class InsertSegment(TopLevelBase):
+    """Creates a window to insert a segment in the editor."""
+    def __init__(self, root, tree, below, leaf, *args, **kwargs):
+        super().__init__(root, *args, **kwargs)
+
+        self.root = root
+        self.tree = tree
+        self.leaf = leaf
+        self.below = below
+
+        self.padding = 4
+        self.entries = []
+
+        self.geometry('400x200')
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+        # self.grid_rowconfigure(1, weight=1)
+
+        self.make_widgets()
+
+    def make_widgets(self):
+        """Makes all the widgets."""
+        self.make_entries()
+        self.make_buttons()
+
+    def make_entries(self):
+        """Makes the entry widgets."""
+        frame = ttk.Frame(self)
+        frame.grid(row=0, column=0, sticky=tk.NSEW)
+
+        entry_labels = ('Icon', 'Segment Name', 'Split Time',
+                        'Segment Time', 'Best Segment')
+        for row, label in enumerate(entry_labels):
+            label = ttk.Label(frame, text=label + ':', padding=self.padding)
+            label.grid(row=row, column=0, sticky=tk.NSEW)
+            entry = ttk.Entry(frame)
+            entry.grid(row=row, column=1, sticky=tk.NSEW)
+            self.entries.append(entry)
+
+        for col in range(1, 2):
+            frame.grid_columnconfigure(col, weight=1)
+        for row in range(len(entry_labels)):
+            frame.grid_rowconfigure(row, weight=1)
+
+    def make_buttons(self):
+        """Makes the button widgets."""
+        frame = ttk.Frame(self)
+        frame.grid(row=1, column=0, sticky=tk.NSEW)
+        for col in range(2):
+            frame.grid_columnconfigure(col, weight=1)
+        for row in range(1):
+            frame.grid_rowconfigure(row, weight=1)
+
+        button_change = ttk.Button(frame, text='Insert', command=self.insert)
+        button_change.grid(row=0, column=0, sticky=tk.NSEW)
+        self.button_change = button_change
+
+        button_exit = ttk.Button(frame, text='Exit', command=self.destroy)
+        button_exit.grid(row=0, column=1, sticky=tk.NSEW)
+        self.button_exit = button_exit
+
+    def insert(self):
+        entries = [entry.get() for entry in self.entries]
+        print('hi before')
+        self.tree.insert(parent='',
+                         index=self.tree.index(self.leaf) + self.below,
+                         values=entries)
+        print('hi after')
+        self.destroy()
 
 
 class TextEditBox(TopLevelBase):
