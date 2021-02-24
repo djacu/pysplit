@@ -1,6 +1,7 @@
 """Creates a stopwatch split timer for speedruns."""
 import tkinter as tk
 import tkinter.ttk as ttk
+from ttkthemes import ThemedStyle
 from PIL import Image, ImageTk
 
 
@@ -63,7 +64,7 @@ class Application(tk.Tk):
 
     def make_button(self):
         """Dummy button for now."""
-        button = tk.Button(self, text='button')
+        button = ttk.Button(self, text='button')
         button.grid(row=2, column=0, sticky=tk.NSEW)
         self.widgets.append((button, 1))
 
@@ -85,14 +86,14 @@ class SplitBox(tk.Listbox):
 
     def make_widgets(self):
         """Makes all the widgets."""
-        list_icon = tk.Label(self, text='hi')
+        list_icon = ttk.Label(self, text='hi')
         list_icon.grid(row=0, column=0, sticky='new')
 
-        list_name = tk.Label(self, text='hi', anchor='w')
+        list_name = ttk.Label(self, text='hi', anchor='w')
         list_name.grid(row=0, column=1, sticky='new')
         list_name.config(width=0)
 
-        list_split = tk.Label(self, text='hi', anchor='e')
+        list_split = ttk.Label(self, text='hi', anchor='e')
         list_split.grid(row=0, column=2, sticky='new')
         list_split.config(width=0)
 
@@ -103,7 +104,7 @@ class SplitBox(tk.Listbox):
             self.grid_columnconfigure(col, weight=weight)
 
 
-class LabelClick(tk.Label):
+class LabelClick(ttk.Label):
     """Creates a label that can be changed by double-clicking."""
     def __init__(self, root, *args, **kwargs):
         super().__init__(root, *args, **kwargs)
@@ -190,7 +191,7 @@ class Editor(TopLevelBase):
 
     def make_left(self):
         """Makes the left widgets."""
-        frame = tk.Frame(self)
+        frame = ttk.Frame(self)
         frame.grid(row=0, column=0, sticky=tk.NSEW)
 
         # image_icon = Image.open('./images/berry.png')
@@ -201,18 +202,18 @@ class Editor(TopLevelBase):
 
         icon = tk.PhotoImage(file='./images/berry.png')
         icon = icon.zoom(10)
-        label_icon = tk.Label(frame, image=icon)
+        label_icon = ttk.Label(frame, image=icon)
         label_icon.image = icon
 
-        button_insert_above = tk.Button(frame, text='Insert Above',
+        button_insert_above = ttk.Button(frame, text='Insert Above',
                                         command=self.destroy)
-        button_insert_below = tk.Button(frame, text='Insert Below',
+        button_insert_below = ttk.Button(frame, text='Insert Below',
                                         command=self.destroy)
-        button_remove = tk.Button(frame, text='Remove',
+        button_remove = ttk.Button(frame, text='Remove',
                                   command=self.destroy)
-        button_move_up = tk.Button(frame, text='Move Up',
+        button_move_up = ttk.Button(frame, text='Move Up',
                                    command=self.destroy)
-        button_move_down = tk.Button(frame, text='Move Down',
+        button_move_down = ttk.Button(frame, text='Move Down',
                                      command=self.destroy)
 
         widget_list = [label_icon, button_insert_above, button_insert_below,
@@ -224,7 +225,7 @@ class Editor(TopLevelBase):
 
     def make_right(self):
         """Makes the right widgets."""
-        right_frame = tk.Frame(self)
+        right_frame = ttk.Frame(self)
         right_frame.grid(row=0, column=1, sticky=tk.NSEW)
 
         widget_name = self.make_name(right_frame)
@@ -241,9 +242,9 @@ class Editor(TopLevelBase):
             # right_frame.grid_rowconfigure(row, weight=1)
 
     def make_name(self, root):
-        frame_name = tk.Frame(root)
+        frame_name = ttk.Frame(root)
         text = 'Game Name:'.ljust(self.label_pad)
-        label_name = tk.Label(frame_name, text=text)
+        label_name = ttk.Label(frame_name, text=text)
         label_name.pack(side=tk.LEFT)
 
         name_list = ['Super Mario World', 'Super Mario Brothers', 'Zelda']
@@ -251,14 +252,15 @@ class Editor(TopLevelBase):
         name_var = tk.StringVar(self)
         name_var.set(name_list[0])
 
-        option_name = tk.OptionMenu(frame_name, name_var, *name_list)
+        option_name = ttk.OptionMenu(frame_name, name_var,
+                                     name_list[0], *name_list)
         option_name.pack(side=tk.RIGHT, expand=True, fill=tk.X)
         return frame_name
 
     def make_category(self, root):
-        frame_category = tk.Frame(root)
+        frame_category = ttk.Frame(root)
         text = 'Category:'.ljust(self.label_pad)
-        label_category = tk.Label(frame_category, text=text)
+        label_category = ttk.Label(frame_category, text=text)
         label_category.pack(side=tk.LEFT)
 
         category_list = ['Any%', '100%', 'Low%', 'Glitchless']
@@ -266,8 +268,8 @@ class Editor(TopLevelBase):
         category_var = tk.StringVar(self)
         category_var.set(category_list[0])
 
-        option_category = tk.OptionMenu(frame_category, category_var,
-                                        *category_list)
+        option_category = ttk.OptionMenu(frame_category, category_var,
+                                         category_list[0], *category_list)
         option_category.pack(side=tk.RIGHT, expand=True, fill=tk.X)
         return frame_category
 
@@ -277,23 +279,23 @@ class Editor(TopLevelBase):
         return [elem.center(max_str) for elem in option]
 
     def make_time(self, root):
-        frame_time = tk.Frame(root)
+        frame_time = ttk.Frame(root)
         text = 'Start time at:'.ljust(self.label_pad)
-        label_time = tk.Label(frame_time, text=text)
+        label_time = ttk.Label(frame_time, text=text)
         label_time.pack(side=tk.LEFT)
 
-        entry_time = tk.Entry(frame_time)
+        entry_time = ttk.Entry(frame_time)
         entry_time.insert(tk.END, '0.00')
         entry_time.pack(side=tk.RIGHT, expand=True, fill=tk.X)
         return frame_time
 
     def make_attempts(self, root):
-        frame_attempts = tk.Frame(root)
+        frame_attempts = ttk.Frame(root)
         text = 'Attempts:'.ljust(self.label_pad)
-        label_attempts = tk.Label(frame_attempts, text=text)
+        label_attempts = ttk.Label(frame_attempts, text=text)
         label_attempts.pack(side=tk.LEFT)
 
-        entry_attempts = tk.Entry(frame_attempts)
+        entry_attempts = ttk.Entry(frame_attempts)
         entry_attempts.insert(tk.END, '1')
         entry_attempts.pack(side=tk.RIGHT, expand=True, fill=tk.X)
         return frame_attempts
@@ -344,11 +346,11 @@ class TextEditBox(TopLevelBase):
 
     def make_entry(self):
         """Makes the entry widget."""
-        entry = tk.Entry(self)
+        entry = ttk.Entry(self)
         entry.grid(row=0, column=0)
         entry.config(width=self.winfo_reqwidth())
         entry.insert(0, self.default)
-        entry.config(fg='grey')
+        # entry.config(fg='grey')
         entry.bind('<FocusIn>', self.focus_in)
         entry.bind('<FocusOut>', self.focus_out)
         self.entry = entry
@@ -359,29 +361,29 @@ class TextEditBox(TopLevelBase):
         if self.entry.get() == self.default:
             self.entry.delete(0, tk.END)
             self.entry.insert(0, '')
-            self.entry.config(fg='black')
+            # self.entry.config(fg='black')
 
     def focus_out(self, event):
         """Inserts an edit message if no user input."""
         # pylint: disable=unused-argument
         if self.entry.get() == '':
             self.entry.insert(0, self.default)
-            self.entry.config(fg='grey')
+            # self.entry.config(fg='grey')
 
     def make_buttons(self):
         """Makes the button widgets."""
-        frame = tk.Frame(self)
+        frame = ttk.Frame(self)
         frame.grid(row=1, column=0, sticky=tk.NSEW)
         for col in range(2):
             frame.grid_columnconfigure(col, weight=1)
         for row in range(1):
             frame.grid_rowconfigure(row, weight=1)
 
-        button_change = tk.Button(frame, text='Change', command=self.get_text)
+        button_change = ttk.Button(frame, text='Change', command=self.get_text)
         button_change.grid(row=0, column=0, sticky=tk.NSEW)
         self.button_change = button_change
 
-        button_exit = tk.Button(frame, text='Exit', command=self.destroy)
+        button_exit = ttk.Button(frame, text='Exit', command=self.destroy)
         button_exit.grid(row=0, column=1, sticky=tk.NSEW)
         self.button_exit = button_exit
 
@@ -395,4 +397,6 @@ class TextEditBox(TopLevelBase):
 
 if __name__ == '__main__':
     APP = Application()
+    STYLE = ThemedStyle(APP)
+    STYLE.set_theme('black')
     APP.mainloop()
