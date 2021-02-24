@@ -1,6 +1,7 @@
 """Creates a stopwatch split timer for speedruns."""
 import tkinter as tk
 import tkinter.ttk as ttk
+from ttkwidgets.autocomplete import AutocompleteCombobox
 from ttkthemes import ThemedStyle
 from PIL import Image, ImageTk
 
@@ -248,12 +249,8 @@ class Editor(TopLevelBase):
         label_name.pack(side=tk.LEFT)
 
         name_list = ['Super Mario World', 'Super Mario Brothers', 'Zelda']
-        name_list = self.resize_options(name_list)
-        name_var = tk.StringVar(self)
-        name_var.set(name_list[0])
 
-        option_name = ttk.OptionMenu(frame_name, name_var,
-                                     name_list[0], *name_list)
+        option_name = AutocompleteCombobox(frame_name, name_list)
         option_name.pack(side=tk.RIGHT, expand=True, fill=tk.X)
         return frame_name
 
@@ -264,19 +261,10 @@ class Editor(TopLevelBase):
         label_category.pack(side=tk.LEFT)
 
         category_list = ['Any%', '100%', 'Low%', 'Glitchless']
-        category_list = self.resize_options(category_list)
-        category_var = tk.StringVar(self)
-        category_var.set(category_list[0])
 
-        option_category = ttk.OptionMenu(frame_category, category_var,
-                                         category_list[0], *category_list)
+        option_category = AutocompleteCombobox(frame_category, category_list)
         option_category.pack(side=tk.RIGHT, expand=True, fill=tk.X)
         return frame_category
-
-    @staticmethod
-    def resize_options(option):
-        max_str = max(len(elem) for elem in option)
-        return [elem.center(max_str) for elem in option]
 
     def make_time(self, root):
         frame_time = ttk.Frame(root)
