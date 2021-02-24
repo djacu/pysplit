@@ -173,6 +173,7 @@ class Editor(TopLevelBase):
         super().__init__(root, *args, **kwargs)
 
         self.root = root
+        self.widgets = {}
 
         self.label_pad = 16
 
@@ -201,22 +202,51 @@ class Editor(TopLevelBase):
         label_icon.image = icon
 
         button_insert_above = ttk.Button(frame, text='Insert Above',
-                                         command=self.destroy)
+                                         command=self.insert_above)
         button_insert_below = ttk.Button(frame, text='Insert Below',
-                                         command=self.destroy)
+                                         command=self.insert_below)
         button_remove = ttk.Button(frame, text='Remove',
-                                   command=self.destroy)
+                                   command=self.remove)
         button_move_up = ttk.Button(frame, text='Move Up',
-                                    command=self.destroy)
+                                    command=self.move_up)
         button_move_down = ttk.Button(frame, text='Move Down',
-                                      command=self.destroy)
+                                      command=self.move_down)
 
+        widget_list_names = ['icon', 'insert_above', 'insert_below',
+                             'remove', 'move_up', 'move_down']
         widget_list = [label_icon, button_insert_above, button_insert_below,
                        button_remove, button_move_up, button_move_down]
         frame.grid_columnconfigure(0, weight=1)
         for row, widget in enumerate(widget_list):
             widget.grid(row=row, column=0, sticky=tk.NSEW)
             # frame.grid_rowconfigure(row, weight=1)
+
+        self.widgets.update([*zip(widget_list_names, widget_list)])
+
+    def insert_above(self):
+        pass
+
+    def insert_below(self):
+        pass
+
+    def remove(self):
+        tree = self.widgets['segments']
+        leaves = tree.selection()
+        for leaf in leaves:
+            tree.delete(leaf)
+
+    def move_up(self):
+        tree = self.widgets['segments']
+        leaves = tree.selection()
+        for leaf in leaves:
+            tree.move(leaf, tree.parent(leaf), tree.index(leaf) - 1)
+
+    def move_down(self):
+        tree = self.widgets['segments']
+        leaves = tree.selection()
+        leaves = reversed(leaves)
+        for leaf in leaves:
+            tree.move(leaf, tree.parent(leaf), tree.index(leaf) + 1)
 
     def make_right(self):
         """Makes the right widgets."""
@@ -229,12 +259,16 @@ class Editor(TopLevelBase):
         widget_attempts = self.make_attempts(right_frame)
         widget_tree = self.make_tree(right_frame)
 
+        widget_list_names = ['game_name', 'category', 'start_time',
+                             'attempts', 'segments']
         widget_list = [widget_name, widget_category, widget_time,
                        widget_attempts, widget_tree]
         right_frame.grid_columnconfigure(0, weight=1)
         for row, widget in enumerate(widget_list):
             widget.grid(row=row, column=0, sticky=tk.NSEW)
             # right_frame.grid_rowconfigure(row, weight=1)
+
+        self.widgets.update([*zip(widget_list_names, widget_list)])
 
     def make_name(self, root):
         """Makes the game name widget."""
@@ -294,12 +328,13 @@ class Editor(TopLevelBase):
         anchors = (tk.CENTER, tk.W, tk.E, tk.E, tk.E)
 
         tree = ttk.Treeview(root, columns=columns, height=10)
-        # gets rid of the annoying phantom first column
-        tree.column('#0', width=0, minwidth=0)
         params = (columns, widths, anchors)
         for idx, (column, width, anchor) in enumerate(zip(*params), 1):
             tree.heading(f'#{idx}', text=column, anchor=anchor)
             tree.column(column, width=width, anchor=anchor)
+
+        # gets rid of the annoying phantom first column
+        tree['show'] = 'headings'
 
         for idx in range(3):
             tree.insert(parent='', index=tk.END,
