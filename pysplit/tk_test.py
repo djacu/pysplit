@@ -4,6 +4,8 @@ import tkinter.ttk as ttk
 from ttkwidgets.autocomplete import AutocompleteCombobox  # pylint: disable=import-error
 from ttkthemes import ThemedStyle  # pylint: disable=import-error
 
+import timer
+
 
 FONT = 'Helvetica'
 
@@ -346,10 +348,11 @@ class Editor(TopLevelBase):
         # gets rid of the annoying phantom first column
         tree['show'] = 'headings'
 
+        test_time = timer.Timer()
         for idx in range(3):
             tree.insert(parent='', index=tk.END,
                         values=('icon', f'Frickin Boo {idx}',
-                                *((f'10:59:{idx}',) * 3)))
+                                *((test_time,) * 3)))
         return tree
 
 
@@ -415,7 +418,21 @@ class InsertSegment(TopLevelBase):
         self.button_exit = button_exit
 
     def insert(self):
-        entries = [entry.get() for entry in self.entries]
+        for entry in self.entries:
+            print(type(entry.get()))
+        entries_text = [entry.get() for entry in self.entries[:2]]
+
+        entries_time = [timer.Timer(), timer.Timer(), timer.Timer()]
+        for time_obj, entry in zip(entries_time, self.entries[2:]):
+            time_obj.from_entry(entry.get())
+        # entries_time = [time_obj.from_entry(entry.get())
+        #                 for time_obj, entry
+        #                 in zip(time_objects, self.entries[2:])]
+        for entry in entries_time:
+            print(type(entry))
+
+        entries = entries_text + entries_time
+
         print('hi before')
         self.tree.insert(parent='',
                          index=self.tree.index(self.leaf) + self.below,
