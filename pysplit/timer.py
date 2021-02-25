@@ -10,6 +10,9 @@ class Timer:
         self._split_list = []
         self._pause = True
 
+    def __str__(self):
+        return self.get_formatted()
+
     @property
     def paused(self):
         return self._pause
@@ -68,3 +71,29 @@ class Timer:
                                                     minutes,
                                                     seconds,
                                                     milliseconds)
+
+    def from_entry(self, entry):
+        split_time = entry.split('.')
+        if len(split_time) < 2:
+            subseconds = '0'
+        else:
+            subseconds = split_time[-1]
+        nano_digits = 9
+        nanoseconds = int(subseconds) * 10 ** (nano_digits - len(subseconds))
+
+        hms = split_time[0].split(':')
+        if len(hms) < 3:
+            hours = 0
+        else:
+            hours = int(hms[0])
+        if len(hms) < 2:
+            minutes = 0
+        else:
+            minutes = int(hms[1])
+        seconds = int(hms[-1])
+
+        # needed for current implementation of get()
+        offset = 1
+        self._pause_time = ((((hours * 60 + minutes) * 60) + seconds) * 10 ** 9
+                            + nanoseconds) + offset
+        self._start_time = offset
