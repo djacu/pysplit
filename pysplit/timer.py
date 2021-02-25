@@ -85,11 +85,11 @@ class Timer:
         if len(hms) < 3:
             hours = 0
         else:
-            hours = int(hms[0])
+            hours = int(hms[-3])
         if len(hms) < 2:
             minutes = 0
         else:
-            minutes = int(hms[1])
+            minutes = int(hms[-2])
         seconds = int(hms[-1])
 
         # needed for current implementation of get()
