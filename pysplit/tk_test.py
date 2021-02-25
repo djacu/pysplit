@@ -229,17 +229,23 @@ class Editor(TopLevelBase):
 
     def insert_above(self):
         tree = self.widgets['segments']
-        leaves = tree.selection()
-        if leaves:
-            leaf = leaves[0]
-            InsertSegment(self, tree=tree, leaf=leaf, below=False)
+        if not tree.get_children():
+            InsertSegment(self, tree=tree, leaf=0, below=False)
+        else:
+            leaves = tree.selection()
+            if leaves:
+                leaf = leaves[0]
+                InsertSegment(self, tree=tree, leaf=leaf, below=False)
 
     def insert_below(self):
         tree = self.widgets['segments']
-        leaves = tree.selection()
-        if leaves:
-            leaf = leaves[0]
-            InsertSegment(self, tree=tree, leaf=leaf, below=True)
+        if not tree.get_children():
+            InsertSegment(self, tree=tree, leaf=0, below=False)
+        else:
+            leaves = tree.selection()
+            if leaves:
+                leaf = leaves[0]
+                InsertSegment(self, tree=tree, leaf=leaf, below=True)
 
     def remove(self):
         tree = self.widgets['segments']
@@ -426,8 +432,13 @@ class InsertSegment(TopLevelBase):
 
         entries = entries_text + entries_time
 
+        if self.leaf:
+            index = self.tree.index(self.leaf)
+        else:
+            index = self.leaf
+
         self.tree.insert(parent='',
-                         index=self.tree.index(self.leaf) + self.below,
+                         index=index + self.below,
                          values=entries)
         self.destroy()
 
