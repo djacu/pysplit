@@ -418,26 +418,17 @@ class InsertSegment(TopLevelBase):
         self.button_exit = button_exit
 
     def insert(self):
-        for entry in self.entries:
-            print(type(entry.get()))
         entries_text = [entry.get() for entry in self.entries[:2]]
 
         entries_time = [timer.Timer(), timer.Timer(), timer.Timer()]
         for time_obj, entry in zip(entries_time, self.entries[2:]):
             time_obj.from_entry(entry.get())
-        # entries_time = [time_obj.from_entry(entry.get())
-        #                 for time_obj, entry
-        #                 in zip(time_objects, self.entries[2:])]
-        for entry in entries_time:
-            print(type(entry))
 
         entries = entries_text + entries_time
 
-        print('hi before')
         self.tree.insert(parent='',
                          index=self.tree.index(self.leaf) + self.below,
                          values=entries)
-        print('hi after')
         self.destroy()
 
 
