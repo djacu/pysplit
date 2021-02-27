@@ -5,8 +5,8 @@ import time
 
 class Timer:
     def __init__(self):
-        self._start_time = 0
-        self._pause_time = 0
+        self._start_time = None
+        self._pause_time = None
         self._split_list = []
         self._pause = True
 
@@ -23,6 +23,11 @@ class Timer:
 
     def start_pause(self):
         # if not self._start_time and not self._split_list and self._pause:
+        if self._start_time is None:
+            self._start_time = 0
+        if self._pause_time is None:
+            self._pause_time = 0
+
         if self._pause:
             self._start_time = (self._start_time
                                 + time.perf_counter_ns()
@@ -44,8 +49,8 @@ class Timer:
 
     def reset(self):
         if self.paused:
-            self._start_time = 0
-            self._pause_time = 0
+            self._start_time = None
+            self._pause_time = None
             self._split_list = []
             self._pause = True
 
@@ -54,9 +59,9 @@ class Timer:
             self._split_list.append(self.get_formatted())
 
     def get(self):
-        if self._pause and not self._start_time:
+        if self._pause and self._start_time is None:
             return 0
-        elif self._pause and self._start_time:
+        elif self._pause and not self._start_time is None:
             return self._pause_time - self._start_time
         else:
             return time.perf_counter_ns() - self._start_time
@@ -93,7 +98,6 @@ class Timer:
         seconds = int(hms[-1])
 
         # needed for current implementation of get()
-        offset = 1
         self._pause_time = ((((hours * 60 + minutes) * 60) + seconds) * 10 ** 9
-                            + nanoseconds) + offset
-        self._start_time = offset
+                            + nanoseconds)
+        self._start_time = 0
