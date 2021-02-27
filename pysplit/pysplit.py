@@ -428,7 +428,8 @@ class InsertSegment(TopLevelBase):
 
         entries_time = [timer.Timer(), timer.Timer(), timer.Timer()]
         for time_obj, entry in zip(entries_time, self.entries[2:]):
-            time_obj.from_entry(entry.get())
+            if entry.get():
+                time_obj.from_entry(entry.get())
 
         entries = entries_text + entries_time
 
